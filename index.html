@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Attendance System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input[type="text"], input[type="email"], select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus, input[type="email"]:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .camera-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        #video {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 12px;
+            display: block;
+            margin: 0 auto 15px;
+            background: #000;
+        }
+
+        #canvas {
+            display: none;
+        }
+
+        .captured-photo {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 12px;
+            margin: 15px auto;
+            display: none;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .info-box strong {
+            color: #1976D2;
+        }
+
+        .status {
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .button-group {
+            text-align: center;
+        }
+
+        .location-info {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Teacher Attendance System</h1>
+            <p>Mark your attendance with photo verification</p>
+        </div>
+
+        <div class="content">
+            <div id="statusMessage" class="status"></div>
+
+            <form id="attendanceForm">
+                <div class="form-group">
+                    <label for="teacherName">Teacher Name *</label>
+                    <input type="text" id="teacherName" required placeholder="Enter your full name">
+                </div>
+
+                <div class="form-group">
+                    <label for="teacherId">Teacher ID *</label>
+                    <input type="text" id="teacherId" required placeholder="Enter your ID">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" required placeholder="Enter your email">
+                </div>
+
+                <div class="form-group">
+                    <label for="department">Department *</label>
+                    <select id="department" required>
+                        <option value="">Select Department</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Science">Science</option>
+                        <option value="English">English</option>
+                        <option value="History">History</option>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Physical Education">Physical Education</option>
+                        <option value="Arts">Arts</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="info-box">
+                    <strong>📅 Date:</strong> <span id="currentDate"></span><br>
+                    <strong>🕐 Time:</strong> <span id="currentTime"></span>
+                </div>
+
+                <div class="location-info" id="locationInfo">
+                    <strong>📍 Location:</strong><br>
+                    <span id="locationText">Fetching location...</span>
+                </div>
+
+                <div class="camera-section">
+                    <label>📸 Capture Photo *</label>
+                    <video id="video" autoplay></video>
+                    <img id="capturedPhoto" class="captured-photo" alt="Captured photo">
+                    <canvas id="canvas"></canvas>
+                    <div class="button-group">
+                        <button type="button" class="btn btn-primary" id="startCamera">Start Camera</button>
+                        <button type="button" class="btn btn-secondary" id="captureBtn" style="display:none;">Capture Photo</button>
+                        <button type="button" class="btn btn-secondary" id="retakeBtn" style="display:none;">Retake</button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-success" id="submitBtn">✓ Mark Attendance</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let videoStream = null;
+        let photoData = null;
+        let locationData = null;
+
+        // Update date and time
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-US');
+        }
+
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+
+        // Get location
+        function getLocation() {
+            if (navigator.geolocation) {
+                document.getElementById('locationInfo').style.display = 'block';
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        locationData = {
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude,
+                            accuracy: position.coords.accuracy
+                        };
+                        document.getElementById('locationText').innerHTML = 
+                            `Latitude: ${locationData.latitude.toFixed(6)}<br>` +
+                            `Longitude: ${locationData.longitude.toFixed(6)}<br>` +
+                            `Accuracy: ${locationData.accuracy.toFixed(0)} meters`;
+                    },
+                    (error) => {
+                        document.getElementById('locationText').textContent = 
+                            'Location access denied or unavailable';
+                        console.error('Location error:', error);
+                    }
+                );
+            } else {
+                document.getElementById('locationText').textContent = 
+                    'Geolocation not supported by browser';
+            }
+        }
+
+        getLocation();
+
+        // Camera functionality
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const capturedPhoto = document.getElementById('capturedPhoto');
+        const startCameraBtn = document.getElementById('startCamera');
+        const captureBtn = document.getElementById('captureBtn');
+        const retakeBtn = document.getElementById('retakeBtn');
+
+        startCameraBtn.addEventListener('click', async () => {
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'user' } 
+                });
+                video.srcObject = videoStream;
+                video.style.display = 'block';
+                startCameraBtn.style.display = 'none';
+                captureBtn.style.display = 'inline-block';
+            } catch (err) {
+                showStatus('Camera access denied or unavailable', 'error');
+                console.error('Camera error:', err);
+            }
+        });
+
+        captureBtn.addEventListener('click', () => {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            photoData = canvas.toDataURL('image/jpeg');
+            
+            capturedPhoto.src = photoData;
+            capturedPhoto.style.display = 'block';
+            video.style.display = 'none';
+            captureBtn.style.display = 'none';
+            retakeBtn.style.display = 'inline-block';
+            
+            // Stop camera
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+            }
+        });
+
+        retakeBtn.addEventListener('click', async () => {
+            capturedPhoto.style.display = 'none';
+            retakeBtn.style.display = 'none';
+            photoData = null;
+            
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'user' } 
+                });
+                video.srcObject = videoStream;
+                video.style.display = 'block';
+                captureBtn.style.display = 'inline-block';
+            } catch (err) {
+                showStatus('Camera access denied', 'error');
+            }
+        });
+
+        // Form submission
+        document.getElementById('attendanceForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            if (!photoData) {
+                showStatus('Please capture your photo before submitting', 'error');
+                return;
+            }
+
+            const attendanceData = {
+                teacherName: document.getElementById('teacherName').value,
+                teacherId: document.getElementById('teacherId').value,
+                email: document.getElementById('email').value,
+                department: document.getElementById('department').value,
+                date: document.getElementById('currentDate').textContent,
+                time: document.getElementById('currentTime').textContent,
+                location: locationData,
+                photo: photoData,
+                timestamp: new Date().toISOString()
+            };
+
+            // Store in localStorage (in production, send to server)
+            const attendanceRecords = JSON.parse(localStorage.getItem('attendanceRecords') || '[]');
+            attendanceRecords.push(attendanceData);
+            localStorage.setItem('attendanceRecords', JSON.stringify(attendanceRecords));
+
+            console.log('Attendance marked:', attendanceData);
+            showStatus('✓ Attendance marked successfully!', 'success');
+
+            // Reset form
+            setTimeout(() => {
+                document.getElementById('attendanceForm').reset();
+                capturedPhoto.style.display = 'none';
+                retakeBtn.style.display = 'none';
+                startCameraBtn.style.display = 'inline-block';
+                photoData = null;
+                getLocation();
+            }, 2000);
+        });
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+            statusDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
